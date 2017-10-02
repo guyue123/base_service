@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ - Copyright 1999-2011 Alibaba Group.
+ -  
+ - Licensed under the Apache License, Version 2.0 (the "License");
+ - you may not use this file except in compliance with the License.
+ - You may obtain a copy of the License at
+ -  
+ -      http://www.apache.org/licenses/LICENSE-2.0
+ -  
+ - Unless required by applicable law or agreed to in writing, software
+ - distributed under the License is distributed on an "AS IS" BASIS,
+ - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ - See the License for the specific language governing permissions and
+ - limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+	
+	<!-- disconf -->
+	<bean id="disconfMgrBean" class="com.baidu.disconf.client.DisconfMgrBean" destroy-method="destroy">
+		<property name="scanPackage" value="com.govnet.service" />
+	</bean>
+	<bean id="propertyConfigurer" class="com.baidu.disconf.client.addons.properties.ReloadingPropertyPlaceholderConfigurer">
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="propertiesArray">
+			<list>
+				<ref bean="disconf_config" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="disconf_config" class="com.baidu.disconf.client.addons.properties.ReloadablePropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>dubbo.properties</value>
+			</list>
+		</property> 
+	</bean>
+
+	<dubbo:annotation/>
+
+    <dubbo:application name="mysql-provider" owner="programmer" organization="dubbox"/>
+    
+    <context:component-scan base-package="com.base.service.mysql.provider" />
+	
+	 <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<!-- 最小空闲连接 -->
+		<property name="minIdle" value="${jdbc.minIdle}" />
+		<!-- 最大空闲连接 -->
+		<property name="maxIdle" value="${jdbc.maxIdle}" />
+		<!-- 最大等待时间 -->
+		<property name="maxWait" value="${jdbc.maxWait}" />
+		<!-- 最大连接数 -->
+		<property name="maxActive" value="${jdbc.maxActive}" />
+		<!-- 初始化连接 -->  
+		<property name="initialSize" value="${jdbc.initialSize}" />
+		<!-- 数据库验证查询语句 -->
+		<property name="validationQuery" value="${jdbc.validationQuery}" />
+		<!-- 是否在从池中取出连接前进行检验 -->
+    	<property name="testOnBorrow" value="${jdbc.testOnBorrow}"/>
+    	<!-- 是否在自动回收超时连接的时候打印连接的超时错误  -->
+    	<property name="logAbandoned" value="${jdbc.logAbandoned}"/>
+    	<!-- 是否自动回收超时连接   -->
+    	<property name="removeAbandoned" value="${jdbc.removeAbandoned}"/>
+    	<!-- 超时时间(以秒数为单位)  -->
+    	<property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}"/>
+    	<!-- 是否在归还到池中前进行检验 -->
+    	<property name="testOnReturn" value="${jdbc.testOnReturn}"/>
+    	<!-- 是否被空闲连接回收器(如果有)进行检验  -->
+    	<property name="testWhileIdle" value="${jdbc.testWhileIdle}"/>
+	</bean>
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    <!-- 使用JDBC事物 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<!-- AOP配置事物 -->
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="query*" read-only="true" propagation="REQUIRED" />
+			<tx:method name="select*" read-only="true" propagation="REQUIRED" />
+			<tx:method name="get*" read-only="true" propagation="REQUIRED" />
+			<tx:method name="delete*"  propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="save*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- 配置AOP切面 -->
+	<aop:config>
+        <aop:pointcut id="transactionPointcut" expression="execution(* com.base.service.mysql.provider.*.*(..))"/>
+        <aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice"/>
+    </aop:config>
+    
+    <dubbo:registry address="${zookeeper.url}"/>
+
+    <!--uncomment this if you want to test dubbo's monitor-->
+    <!-- <dubbo:monitor protocol="registry"/> -->
+
+    <dubbo:protocol name="dubbo" port="${dubbo.protocol.port}" serialization="kryo" optimizer="com.base.service.mysql.api.SerializationOptimizerImpl"/>
+    <dubbo:service interface="com.base.service.mysql.api.MysqlOperateService" timeout="${dubbo.service.timeout}" ref="mysqlOperateService"  protocol="dubbo"/>
+    <bean id="mysqlOperateService" class="com.base.service.mysql.provider.MysqlOperateServiceImpl" >
+    </bean>
+</beans>
