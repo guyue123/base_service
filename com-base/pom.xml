@@ -10,6 +10,7 @@
   	<module>com-base-oracle-service</module>
   	<module>com-base-es-service</module>
   	<module>com-base-cache</module>
+  	<module>base-service-test</module>
   </modules>
 	<properties>
 		<!-- Common libs -->
