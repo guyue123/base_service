@@ -55,4 +55,29 @@ public class MysqlOperateServiceImpl implements MysqlOperateService{
         return jdbcTemplate.queryForInt(sql, param);
     }
 
+	@Override
+	public List<Map<String, Object>> queryForList(String sql) {
+		return queryForList(sql, null);
+	}
+
+	@Override
+	public <T> List<T> queryObjectList(String sql, Class<T> classType) {
+		return queryForList(sql, classType, null);
+	}
+
+	@Override
+	public Map<String, Object> queryObject(String sql) {
+		return this.queryObject(sql, null);
+	}
+
+	@Override
+	public <T> T queryItem(String sql, Class<T> classType) {
+		return queryObject(sql, classType, null);
+	}
+
+	@Override
+	public int queryForInt(String sql) {
+		return queryForInt(sql, null);
+	}
+
 }

@@ -47,6 +47,7 @@
 		<property name="locations">
 			<list>
 				<value>dubbo.properties</value>
+				<value>jdbc.properties</value>
 			</list>
 		</property> 
 	</bean>
@@ -118,7 +119,7 @@
         <aop:advisor pointcut-ref="transactionPointcut" advice-ref="transactionAdvice"/>
     </aop:config>
     
-    <dubbo:registry address="${zookeeper.url}"/>
+    <dubbo:registry address="${dubbo.registry.address}"/>
 
     <!--uncomment this if you want to test dubbo's monitor-->
     <!-- <dubbo:monitor protocol="registry"/> -->

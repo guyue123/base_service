@@ -20,7 +20,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 
-    <bean class="com.govnet.service.test.AppTestCoo" init-method="test">
+    <bean class="com.base.service.test.AppTestMysql" init-method="test">
 		
 <!-- 		<property name="objectRelationService" ref="objectRelationService" />
 		<property name="mysqlOperateService" ref="mysqlOperateService" />

@@ -47,6 +47,7 @@
 		<property name="locations">
 			<list>
 				<value>dubbo.properties</value>
+				<value>jdbc.properties</value>
 			</list>
 		</property> 
 	</bean>

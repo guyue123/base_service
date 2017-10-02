@@ -14,10 +14,10 @@
 	http://www.springframework.org/schema/aop 
 	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
 
-    <dubbo:application name="test-consumer" owner="govnet" organization="govnet"/>
+    <dubbo:application name="test-consumer" owner="base" organization="base"/>
     <dubbo:annotation/>
 	
-    <context:component-scan base-package="com.govnet" />
+    <context:component-scan base-package="com.base" />
     
     
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -37,14 +37,7 @@
     
     <dubbo:registry address="${dubbo.registry.address}"/>
     
-<!--     <dubbo:protocol name="dubbo" port="20883" serialization="kryo" optimizer="com.wp.service.objectRelation.api.SerializationOptimizerImpl"/>
-    <dubbo:reference id="objectRelationService" interface="com.wp.service.objectRelation.api.ObjectRelationService"/>
-   	<dubbo:reference id="mysqlOperateService" interface="com.wp.service.mysql.api.MysqlOperateService"/>
-    <dubbo:reference id="orientDbService" interface="org.wp.service.orientdb.api.OrientDbService"/> -->
-    <dubbo:reference id="queryService" interface="com.govnet.service.es.facade.QueryService142"/>
-	<!-- <dubbo:reference id="impalaOperateService" interface="com.govnet.service.impala.api.ImpalaOperateService"/> -->
-	
-	<dubbo:reference id="cocoService" interface="com.govnet.coocurrence.service.CooccurrenceService" check="false"/>
-	<dubbo:reference id="deviceLocationService" interface="com.govnet.coocurrence.service.DeviceLocationService" check="false"/>
+   	<dubbo:reference id="mysqlOperateService" interface="com.base.service.mysql.api.MysqlOperateService"/>
+    <dubbo:reference id="queryService" interface="com.base.service.es.facade.QueryService142"/>
 	
 </beans>
