@@ -7,7 +7,7 @@ import java.util.Map;
  * 
  * mysql操作接口服务
  *
- * @author <a href="mailto:linshuncai@govnet.com.cn">lsc</a>
+ * @author <a href="mailto:xxx@163.com.cn">lsc</a>
  * @since 1.0.0
  * @version 版本：1.0.0
  * @from 2016-11-7

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!-- disconf -->
+	<bean id="disconfMgrBean" class="com.baidu.disconf.client.DisconfMgrBean" destroy-method="destroy">
+		<property name="scanPackage" value="com.base.service" />
+	</bean>
+	<bean id="propertyConfigurer" class="com.baidu.disconf.client.addons.properties.ReloadingPropertyPlaceholderConfigurer">
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="propertiesArray">
+			<list>
+				<ref bean="disconf_config" />
+			</list>
+		</property>
+	</bean>
+	
+    <dubbo:application name="${dubbo.application.name}" owner="${dubbo.application.owner}" organization="${dubbo.application.owner}"/>
+    
+    <bean id="disconf_config" class="com.baidu.disconf.client.addons.properties.ReloadablePropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>dubbo.properties</value>
+				<value>config.properties</value>
+			</list>
+		</property> 
+	</bean>
+    
+    <bean class="com.base.service.es142.util.EsEnvFactory" init-method="init">
+		<property name="address" value="${es.server.address}" />
+		<property name="clusterName" value="${es.cluster.name}" />
+	</bean>
+    
+    <dubbo:registry address="${dubbo.registry.address}"/>
+    <!--uncomment this if you want to test dubbo's monitor-->
+    <dubbo:monitor protocol="${dubbo.monitor.protocol}"/>
+    
+	<dubbo:protocol name="dubbo" port="${dubbo.protocol.port}" serialization="hessian2" optimizer="com.base.service.es.bean.SerializationOptimizerImpl"/>
+
+	<dubbo:service interface="com.base.service.es.facade.QueryService142" ref="queryService" timeout="${dubbo.service.timeout=1200000}" protocol="dubbo"/>
+    <bean id="queryService" class="com.base.service.es142.impl.QueryServiceImpl" />
+</beans>

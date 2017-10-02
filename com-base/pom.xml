@@ -6,6 +6,10 @@
   <packaging>pom</packaging>
   <modules>
   	<module>com-base-service-mysql</module>
+  	<module>dubbo-center</module>
+  	<module>com-base-oracle-service</module>
+  	<module>com-base-es-service</module>
+  	<module>com-base-cache</module>
   </modules>
 	<properties>
 		<!-- Common libs -->

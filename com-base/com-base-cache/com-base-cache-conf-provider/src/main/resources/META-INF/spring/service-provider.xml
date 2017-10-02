@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+	<!-- disconf -->
+	<bean id="disconfMgrBean" class="com.baidu.disconf.client.DisconfMgrBean" destroy-method="destroy">
+		<property name="scanPackage" value="com.base.service.cache.conf.provide" />
+	</bean>
+	<bean id="disconfMgrBean2" class="com.baidu.disconf.client.DisconfMgrBeanSecond" init-method="init" destroy-method="destroy"></bean>
+	<bean id="configproperties_disconf" class="com.baidu.disconf.client.addons.properties.ReloadablePropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>dubbo.properties</value>
+				<value>config.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="propertyConfigurer" class="com.baidu.disconf.client.addons.properties.ReloadingPropertyPlaceholderConfigurer">
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="propertiesArray">
+			<list>
+				<ref bean="configproperties_disconf" />
+			</list>
+		</property>
+	</bean>
+	
+	<dubbo:annotation/>
+    <dubbo:application name="${dubbo.application.name}" owner="${dubbo.application.owner}" organization="dubbox"/>
+    <context:component-scan base-package="com.base.service.cache.conf.provide" />
+    
+    <dubbo:registry address="${dubbo.registry.address}"/>
+    <dubbo:monitor protocol="${dubbo.monitor.protocol}"/>
+    <dubbo:protocol name="${dubbo.protocol.name}" port="${dubbo.protocol.port}" serialization="kryo" optimizer="com.base.service.cache.conf.api.SerializationOptimizerImpl"/>
+
+    <dubbo:protocol name="rest" port="${dubbo.rest.tomcat.port}" threads="500" contextpath="services" server="tomcat" accepts="500"
+                    extension="com.base.service.cache.conf.api.extention.TraceInterceptor,
+                    com.base.service.cache.conf.api.extention.CORSFilter,
+                    com.base.service.cache.conf.api.extention.TraceFilter,
+                    com.base.service.cache.conf.api.extention.ClientTraceFilter,
+                    com.base.service.cache.conf.api.extention.DynamicTraceBinding,
+                    com.base.service.cache.conf.api.extention.CustomExceptionMapper,
+                    com.alibaba.dubbo.rpc.protocol.rest.support.LoggingFilter"/>
+
+<!-- 
+    <dubbo:reference id="wpCacheService" interface="com.base.service.cache.api.WpCacheService"/>
+   -->
+    <bean id="cacheConfRestService" class="com.base.service.cache.conf.provide.service.impl.CacheConfRestServiceImpl"/>
+    <dubbo:service interface="com.base.service.cache.conf.api.service.CacheConfRestService" ref="cacheConfRestService"  protocol="rest"
+                   timeout="60000" connections="100" validation="true"/>
+    
+    <dubbo:service interface="com.base.service.cache.conf.api.service.CacheConfService" timeout="1200000" ref="cacheConfService"  protocol="dubbo"/>
+    
+    <bean id="cacheConfService" class="com.base.service.cache.conf.provide.service.impl.CacheConfServiceImpl" init-method="cacheAll"/>
+    
+</beans>

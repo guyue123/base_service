@@ -31,7 +31,7 @@
 	
 	<!-- disconf -->
 	<bean id="disconfMgrBean" class="com.baidu.disconf.client.DisconfMgrBean" destroy-method="destroy">
-		<property name="scanPackage" value="com.govnet.service" />
+		<property name="scanPackage" value="com.base.service" />
 	</bean>
 	<bean id="propertyConfigurer" class="com.baidu.disconf.client.addons.properties.ReloadingPropertyPlaceholderConfigurer">
 		<property name="ignoreResourceNotFound" value="true" />
