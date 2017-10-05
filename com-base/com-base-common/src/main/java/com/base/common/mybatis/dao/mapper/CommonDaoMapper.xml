@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.base.common.mybatis.dao.mapper.CommonDaoMapper">
+	<sql id="OrCriteria_Search">
+		<where>
+			<foreach collection="orCriteria.orCriteria" item="criteria"
+				separator="or">
+				<trim prefix="(" suffix=")">
+					<foreach collection="criteria.criteria" item="criterion"
+						separator="and">
+						<choose>
+							<when
+								test="criterion instanceof com.base.common.mybatis.criterion.BetweenCriterion">
+								${cirterion.statement} #{cirterion.lo} and
+								#{criterion.hi}
+							</when>
+							<when
+								test="criterion instanceof com.base.common.mybatis.criterion.InCriterion">
+								${cirterion.statement}
+								<foreach collection="cirterion.values" item="val" open="("
+									close=")" separator=",">
+									#{val}
+								</foreach>
+							</when>
+							<when
+								test="criterion instanceof com.base.common.mybatis.criterion.LikeCriterion">
+								${criterion.statement}
+								concat('%',#{criterion.value},'%')
+							</when>
+							<when
+								test="criterion instanceof com.base.common.mybatis.criterion.NotNullCriterion">
+								${criterion.statement}
+							</when>
+							<when
+								test="criterion instanceof com.base.common.mybatis.criterion.NullCriterion">
+								${criterion.statement}
+							</when>
+							<when
+								test="criterion instanceof com.base.common.mybatis.criterion.SimpleCriterion">
+								${criterion.statement} #{criterion.value}
+							</when>
+						</choose>
+					</foreach>
+				</trim>
+			</foreach>
+			<if test="orCriteria.orderListSize > 0">
+				order by
+				<foreach collection="orCriteria.orderList" separator=","
+					item="order">
+					${order.statement}
+				</foreach>
+			</if>
+		</where>
+	</sql>
+	<select id="selectByCriteria" parameterType="com.base.common.mybatis.OrCriteria">
+		select
+		!FIELDS! from @tableName@
+		<if test="_parameter != null">
+			<include refid="OrCriteria_Search" />
+		</if>
+	</select>
+	<select id="selectByPrimaryKey">
+		select !FIELDS! from @tableName@
+	</select>
+	<select id="countByCriteria" parameterType="com.base.common.mybatis.OrCriteria"
+		resultType="java.lang.Integer">
+		select count(*) from @tableName@
+		<if test="_parameter != null">
+			<include refid="OrCriteria_Search" />
+		</if>
+	</select>
+	<select id="selectSeqNextVal" resultType="String">
+		select
+		!SEQUENCE!.NEXTVAL id from DUAL
+	</select>
+	<select id="selectSeqCurrVal" resultType="String">
+		select
+		!SEQUENCE!.CURRVAL id from DUAL
+	</select>
+	<select id="selectSysGuid" resultType="String">
+		select sys_guid() id from
+		dual
+	</select>
+	<select id="selectBySql" resultType="HashMap">
+		!SQL!
+	</select>
+	<delete id="deleteByPrimaryKey">
+		delete from @tableName@
+	</delete>
+	<delete id="deleteByCriteria">
+		delete from @tableName@
+		<if test="_parameter != null">
+			<include refid="OrCriteria_Search" />
+		</if>
+	</delete>
+	<insert id="insert">
+		insert into @tableName@
+	</insert>
+	<update id="updateByCriteria">
+		update @tableName@
+		<if test="_parameter != null">
+			<include refid="OrCriteria_Search" />
+		</if>
+	</update>
+	<update id="updateByPrimaryKey">
+		update @tableName@
+	</update>
+</mapper>

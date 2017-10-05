@@ -11,6 +11,7 @@
   	<module>com-base-es-service</module>
   	<module>com-base-cache</module>
   	<module>base-service-test</module>
+  	<module>com-base-common</module>
   </modules>
 	<properties>
 		<!-- Common libs -->
