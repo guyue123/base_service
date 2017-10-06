@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+<!-- 	<properties resource="conf/mapper.properties">
+	</properties> -->
+
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+		<setting name="lazyLoadingEnabled" value="false" />
+		<setting name="multipleResultSetsEnabled" value="true" />
+		<setting name="useColumnLabel" value="true" />
+		<setting name="useGeneratedKeys" value="false" />
+		<setting name="defaultExecutorType" value="SIMPLE" />
+		<setting name="defaultStatementTimeout" value="25000" />
+	</settings>
+
+	<!--
+	<typeHandlers> 
+	    <typeHandler javaType="String" jdbcType="VARCHAR" handler="g.sql.ibatis.MyTypeHandler" /> 
+	</typeHandlers>
+	-->
+
+	<!--
+	<objectFactory type="g.sql.ibatis.MyObjectFactory"> 
+	    <property name="objectFactoryProperty" value="100"/> 
+	</objectFactory>
+	-->
+
+    <!-- 没有启用的参数？
+    <objectWrapperFactory type="g.sql.ibatis.MyObjectWrapperFactory">
+    </objectWrapperFactory>
+    -->
+
+	<!-- plugins:如果你尝试修改或覆盖一个给定的方法，你可能会打破MyBatis的核心。这是低层次的类和方法，要谨慎使用插件。 -->
+	<plugins>
+		<!--
+		处理Map返回类型(resultType)为空值的Plugin，
+		因为Mybatis返回类型为Map时，不设置null值的键key，一些业务的处理必须每个Map的键个数一样
+		-->
+		<plugin interceptor="com.base.common.sql.ibatis.MapNullValuePlugin">
+			<property name="someProperty" value="100" />
+		</plugin>
+	</plugins>
+
+	<environments default="development_mysql">
+		<environment id="development_mysql">
+			<transactionManager type="JDBC">
+				<property name="" value="" />
+			</transactionManager>
+			<dataSource type="POOLED">
+				<property name="driver" value="${mysql.driver}" />
+				<property name="url" value="${mysql.url}" />
+				<property name="username" value="${mysql.username}" />
+				<property name="password" value="${mysql.password}" />
+			</dataSource>
+
+		</environment>
+
+<!-- 		<environment id="development_oracle">
+			<transactionManager type="JDBC">
+				<property name="" value="" />
+			</transactionManager>
+			<dataSource type="POOLED">
+				<property name="driver" value="${oracle.driver}" />
+				<property name="url" value="${oracle.url}" />
+				<property name="username" value="${oracle.username}" />
+				<property name="password" value="${oracle.password}" />
+			</dataSource>
+		</environment> -->
+	</environments>
+
+	<mappers>
+		<!-- 测试数据库连接  -->
+		<mapper resource="com/base/common/sql/dao/CommonMapper.xml" />
+		<mapper resource="com/base/scheduler/orm/sqlmap/SchedulerConfigMapper.xml" />
+	</mappers>
+
+</configuration>

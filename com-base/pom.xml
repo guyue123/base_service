@@ -12,6 +12,7 @@
   	<module>com-base-cache</module>
   	<module>base-service-test</module>
   	<module>com-base-common</module>
+  	<module>com-base-job</module>
   </modules>
 	<properties>
 		<!-- Common libs -->

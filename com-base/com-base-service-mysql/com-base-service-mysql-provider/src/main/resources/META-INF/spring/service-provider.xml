@@ -54,7 +54,7 @@
 
 	<dubbo:annotation/>
 
-    <dubbo:application name="mysql-provider" owner="programmer" organization="dubbox"/>
+    <dubbo:application name="${dubbo.application.name}" owner="${dubbo.application.owner}" organization="dubbox"/>
     
     <context:component-scan base-package="com.base.service.mysql.provider" />
 	

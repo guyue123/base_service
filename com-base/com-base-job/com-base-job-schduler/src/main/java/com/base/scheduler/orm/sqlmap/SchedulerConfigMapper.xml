@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.base.scheduler.schedulerConfig">
+   <resultMap id="schedulerConfig" type="com.base.scheduler.orm.pojo.SchedulerConfig">  
+       <result column="JOB_ID" property="jobId"/>
+       <result column="GROUP_ID" property="groupId"/>
+       <result column="TRIGGER_ID" property="triggerId"/>
+       <result column="JOB_CLASS" property="jobClass"/>
+       <result column="CRON" property="cron"/>
+       <result column="STATUS" property="status"/>
+	   <result column="DES" property="desc"/>
+	   <result column="RUN_GROUP" property="runGroup"/>
+	   <result column="RUN_PROPS" property="runProps"/>
+       <result column="CREATETIME" property="insertTime"/>
+       <result column="MODIFYTIME" property="updateTime"/>
+       <result column="CREATEUSER" property="insertUser"/>
+       <result column="MODIFYUSER" property="updateUser"/>
+   </resultMap>
+    
+  <select id="selectConfig" resultMap="schedulerConfig">
+	SELECT * from SCHEDULER_CONFIG
+	where 1=1
+	<if test="STATUS != null and STATUS != ''" >
+       AND STATUS = #{STATUS}
+    </if>
+	<if test="JOB_ID != null and JOB_ID != ''" >
+       AND JOB_ID = #{JOB_ID}
+    </if>
+	<if test="GROUP_ID != null and GROUP_ID != ''" >
+       AND GROUP_ID = #{GROUP_ID}
+    </if>
+	<if test="TRIGGER_ID != null and TRIGGER_ID != ''" >
+       AND TRIGGER_ID = #{TRIGGER_ID}
+    </if>
+	<if test="JOB_CLASS != null and JOB_CLASS != ''" >
+       AND JOB_CLASS = #{JOB_CLASS}
+    </if>
+  </select>
+</mapper>
